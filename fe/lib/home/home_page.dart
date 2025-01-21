@@ -4,14 +4,14 @@ import 'package:get/get.dart';
 
 // 페이지 이동을 위한 import
 import 'info_page.dart';
-import '../user_page.dart';
-import '../adjustment/adjustment_page.dart';
+import '../pages/user_page.dart';
+import '../pages/adjustment_page.dart';
 import '../widgets/logo_and_notification.dart';
 import '../widgets/user_info_container.dart';
 import '../widgets/dutch_pay_options.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
