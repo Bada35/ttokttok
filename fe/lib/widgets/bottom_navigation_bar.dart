@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../pages/home_page.dart';
 import '../pages/adjustment_page.dart';
-import '../pages/user_page.dart';
+import '../pages/user/user_page.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
