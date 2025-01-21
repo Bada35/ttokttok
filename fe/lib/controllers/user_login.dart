@@ -13,62 +13,65 @@ import '../home/home_page.dart'; // HomePage 임포트 추가
 
 class LoginController extends GetxController {
   final UserController userController = Get.put(UserController());
-  static final String _baseUrl = dotenv.env['BASE_URL']!; // baseUrl 설정
+  static final String _baseUrl = dotenv.env['BASE_URL']!;
 
-  // 카카오 로그인 및 API 서버로 사용자 데이터 요청
   Future<void> loginWithKakao() async {
+    // 임시 로그인 처리
+    try {
+      // 임시 사용자 데이터
+      final Map<String, dynamic> mockData = {
+        "id": 1,
+        "kakao_id": 12345,
+        "nickname": "테스트 사용자",
+        "email": "test@example.com",
+        "profileImageUrl": "",
+        "accessToken": "temp_access_token",
+        "refreshToken": "temp_refresh_token"
+      };
+
+      // 사용자 정보 업데이트
+      await _updateUserInfo(mockData);
+
+      // HomePage로 이동
+      Get.to(() => HomePage());
+    } catch (e) {
+      print("임시 로그인 처리 실패: $e");
+      Get.snackbar(
+        "로그인 실패",
+        "로그인 처리 중 오류가 발생했습니다.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+
+    /* 소셜 로그인 복구를 위해 사용됨
     try {
       OAuthToken? token;
 
-      // 환경 확인
       if (kIsWeb) {
-        // 웹 환경에서는 카카오 계정 로그인을 사용
         token = await UserApi.instance.loginWithKakaoAccount();
-        print('웹 환경에서 카카오 계정으로 로그인 성공: ${token.accessToken}');
       } else if (Platform.isAndroid || Platform.isIOS) {
-        // 모바일 앱 환경에서는 카카오톡 간편 로그인 시도
         try {
           token = await UserApi.instance.loginWithKakaoTalk();
-          print('카카오톡 앱으로 로그인 성공: ${token.accessToken}');
         } catch (talkLoginError) {
-          print('카카오톡 앱 로그인 실패: $talkLoginError');
           token = await UserApi.instance.loginWithKakaoAccount();
-          print('카카오 계정으로 로그인 성공: ${token.accessToken}');
         }
       } else {
         throw Exception('지원하지 않는 플랫폼입니다.');
       }
 
       if (token?.accessToken.isNotEmpty ?? false) {
-        // 직접 API 요청을 보내는 부분
         final response = await _sendLoginRequest(token!.accessToken);
-
+        
         if (response.statusCode == 200) {
           final data = json.decode(utf8.decode(response.bodyBytes))["data"];
-          print("서버에서 받은 사용자 데이터: $data");
-
-          // 사용자 정보 업데이트
           await _updateUserInfo(data);
-
-          // HomePage로 이동
           Get.to(() => HomePage());
-        } else {
-          print("서버 요청 실패: ${response.statusCode}");
-          print("응답 내용: ${response.body}");
-
-          // 에러 메시지 표시
-          Get.snackbar(
-            "로그인 실패",
-            "서버에서 유효하지 않은 응답을 받았습니다.",
-            snackPosition: SnackPosition.BOTTOM,
-          );
         }
-      } else {
-        print("토큰이 유효하지 않습니다.");
       }
     } catch (e) {
       print("API 요청 실패: $e");
     }
+    */
   }
 
   // 사용자 정보를 업데이트하는 메서드

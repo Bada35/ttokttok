@@ -8,7 +8,7 @@ import '../controllers/user_login.dart';
 
 // 카카오 소셜 로그인 기능
 class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -98,17 +98,22 @@ class LoginPage extends StatelessWidget {
               GestureDetector(
                 onTap: () => loginController.loginWithKakao(),
                 child: Container(
-                  width: screenSize.width * 0.8, // 버튼 너비
-                  height: screenSize.height * 0.2, // 버튼 높이
+                  width: screenSize.width * 0.8,
+                  height: 50,
                   decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(
-                          'assets/images/kakao_login_medium_wide.png'), // 카카오 로그인 이미지
-                      fit: BoxFit
-                          .contain, // BoxFit.cover, BoxFit.contain, 또는 BoxFit.fill을 사용할 수 있습니다.
+                    color: Color(0xFFFEE500),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '카카오톡으로 시작하기',
+                      style: TextStyle(
+                        color: Color(0xFF191919),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-                  alignment: Alignment.center,
                 ),
               ),
             ],
