@@ -68,6 +68,7 @@ flutter:
     - assets/images/app_logo.jpg
     - assets/images/app_logo_word.png
     - assets/.env
+    - assets/images/profile_placeholder.png
   fonts:
     - family: Pretendard
       fonts:
