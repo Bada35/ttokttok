@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../home/home_page.dart';
-import '../pages/user_page.dart';
+import '../pages/user/user_page.dart';
 
 class AdjustmentPage extends StatefulWidget {
   const AdjustmentPage({super.key});
