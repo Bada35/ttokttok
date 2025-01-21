@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 // 페이지 이동을 위한 import
 import 'info_page.dart';
-import '../pages/user_page.dart';
+import '../pages/user/user_page.dart';
 import '../pages/adjustment_page.dart';
 import '../widgets/logo_and_notification.dart';
 import '../widgets/user_info_container.dart';
