@@ -40,6 +40,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   device_info_plus: ^11.1.1
   shared_preferences: ^2.3.3
+  flutter_svg: ^2.0.9  # 추가
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,7 @@ flutter:
     - assets/images/app_logo_word.png
     - assets/.env
     - assets/images/profile_placeholder.png
+    - assets/images/green_check.svg  # 추가
   fonts:
     - family: Pretendard
       fonts:
