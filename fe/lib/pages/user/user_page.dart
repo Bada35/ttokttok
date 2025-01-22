@@ -4,6 +4,7 @@ import '../../widgets/bottom_navigation_bar.dart';
 import '../../controllers/user_controller.dart';
 import 'edit_profile_page.dart';
 import 'settings_page.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
@@ -50,8 +51,18 @@ class UserPage extends StatelessWidget {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
+    bool showCheckIcon = false,
   }) {
     return ListTile(
+      contentPadding: const EdgeInsets.only(left: 12, right: 16),
+      minLeadingWidth: 6,
+      leading: showCheckIcon
+          ? SvgPicture.asset(
+              'assets/images/green_check.svg',
+              width: 20,
+              height: 20,
+            )
+          : null,
       title: Text(
         title,
         style: const TextStyle(
@@ -95,6 +106,7 @@ class UserPage extends StatelessWidget {
                 child: _buildMenuCard(
                   title: '내 정산내역',
                   subtitle: '',
+                  showCheckIcon: true,
                   onTap: () {
                     print('정산 내역 페이지로 이동');
                   },
