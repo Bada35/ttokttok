@@ -12,7 +12,7 @@ class _AdjustmentListPageState extends State<AdjustmentListPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String selectedFilter = '전체';
-  final TextEditingController _searchController = TextEditingController();
+  bool hasUnreadNotifications = true;
 
   @override
   void initState() {
@@ -23,18 +23,46 @@ class _AdjustmentListPageState extends State<AdjustmentListPage>
   @override
   void dispose() {
     _tabController.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('정산 목록'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Row(
+          children: [
+            Text(
+              _tabController.index == 0 ? '정산 중' : '정산 완료',
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (_tabController.index == 0 && hasUnreadNotifications)
+              Container(
+                margin: const EdgeInsets.only(left: 4),
+                width: 6,
+                height: 6,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF04452),
+                  shape: BoxShape.circle,
+                ),
+              ),
+          ],
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.search, color: Colors.black),
+            onPressed: () {
+              // TODO: 검색 기능 구현
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.black),
             onPressed: () {
               Navigator.pushNamed(context, '/create-room');
             },
@@ -42,56 +70,41 @@ class _AdjustmentListPageState extends State<AdjustmentListPage>
         ],
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Colors.black,
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: Colors.black,
+          onTap: (index) {
+            setState(() {}); // 탭 변경 시 제목 업데이트를 위해
+          },
           tabs: const [
             Tab(text: '정산 중'),
             Tab(text: '정산 완료'),
           ],
         ),
       ),
-      body: Column(
+      body: TabBarView(
+        controller: _tabController,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                DropdownButton<String>(
-                  value: selectedFilter,
-                  items: ['전체', '개인', '단체'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        selectedFilter = newValue;
-                      });
-                    }
-                  },
-                ),
-                const Spacer(),
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      hintText: '검색',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          // 정산 중 탭
+          ListView(
+            children: [
+              _buildDateGroup('9월 1일', [
+                _buildAdjustmentItem('똑똑팀', '금액 미입력', false),
+                _buildAdjustmentItem('홍길동 외 2인', '총 26,500원', true),
+              ]),
+              _buildDateGroup('8월 27일', [
+                _buildAdjustmentItem('김유진', '총 4,000원', true),
+              ]),
+            ],
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildAdjustmentList(isCompleted: false),
-                _buildAdjustmentList(isCompleted: true),
-              ],
-            ),
+          // 정산 완료 탭
+          ListView(
+            children: [
+              _buildDateGroup('8월 25일', [
+                _buildAdjustmentItem('완료된 정산 1', '총 15,000원', true),
+                _buildAdjustmentItem('완료된 정산 2', '총 30,000원', true),
+              ]),
+            ],
           ),
         ],
       ),
@@ -99,23 +112,54 @@ class _AdjustmentListPageState extends State<AdjustmentListPage>
     );
   }
 
-  Widget _buildAdjustmentList({required bool isCompleted}) {
-    return ListView.builder(
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: ListTile(
-            title: Text(
-                isCompleted ? '완료된 정산 ${index + 1}' : '진행 중인 정산 ${index + 1}'),
-            subtitle: Text('총 ${(index + 1) * 10000}원'),
-            trailing: Text(DateTime.now().toString().substring(0, 10)),
-            onTap: () {
-              Navigator.pushNamed(context, '/adjustment-detail');
-            },
+  Widget _buildDateGroup(String date, List<Widget> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Text(
+            date,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        );
-      },
+        ),
+        ...items,
+      ],
+    );
+  }
+
+  Widget _buildAdjustmentItem(String title, String amount, bool hasAmount) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF4F5F7),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        subtitle: Text(
+          amount,
+          style: TextStyle(
+            fontSize: 13,
+            color: hasAmount ? const Color(0xFF8C98A8) : Colors.black54,
+            height: 1.8,
+          ),
+        ),
+        onTap: () {
+          Navigator.pushNamed(context, '/adjustment-detail');
+        },
+      ),
     );
   }
 }
