@@ -33,78 +33,124 @@ class _AdjustmentListPageState extends State<AdjustmentListPage>
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Row(
-          children: [
-            Text(
-              _tabController.index == 0 ? '정산 중' : '정산 완료',
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            if (_tabController.index == 0 && hasUnreadNotifications)
-              Container(
-                margin: const EdgeInsets.only(left: 4),
-                width: 6,
-                height: 6,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF04452),
-                  shape: BoxShape.circle,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/create-room');
+              },
+              child: const Text(
+                '방 생성',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.black),
-            onPressed: () {
-              // TODO: 검색 기능 구현
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.add, color: Colors.black),
-            onPressed: () {
-              Navigator.pushNamed(context, '/create-room');
-            },
+            ),
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: Colors.black,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: Colors.black,
-          onTap: (index) {
-            setState(() {}); // 탭 변경 시 제목 업데이트를 위해
-          },
-          tabs: const [
-            Tab(text: '정산 중'),
-            Tab(text: '정산 완료'),
-          ],
-        ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          // 정산 중 탭
-          ListView(
-            children: [
-              _buildDateGroup('9월 1일', [
-                _buildAdjustmentItem('똑똑팀', '금액 미입력', false),
-                _buildAdjustmentItem('홍길동 외 2인', '총 26,500원', true),
-              ]),
-              _buildDateGroup('8월 27일', [
-                _buildAdjustmentItem('김유진', '총 4,000원', true),
-              ]),
-            ],
+          Container(
+            child: Column(
+              children: [
+                TabBar(
+                  controller: _tabController,
+                  labelColor: Colors.black,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: Colors.black,
+                  labelStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  unselectedLabelStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  tabs: [
+                    Tab(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('정산 중'),
+                          if (hasUnreadNotifications)
+                            Container(
+                              margin: const EdgeInsets.only(left: 4),
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFF04452),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const Tab(text: '정산 완료'),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      DropdownButton<String>(
+                        value: selectedFilter,
+                        items: <String>['전체', '개인', '단체']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedFilter = newValue!;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.search, color: Colors.black),
+                        onPressed: () {
+                          // TODO: 검색 기능 구현
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          // 정산 완료 탭
-          ListView(
-            children: [
-              _buildDateGroup('8월 25일', [
-                _buildAdjustmentItem('완료된 정산 1', '총 15,000원', true),
-                _buildAdjustmentItem('완료된 정산 2', '총 30,000원', true),
-              ]),
-            ],
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                // 정산 중 탭
+                ListView(
+                  children: [
+                    _buildDateGroup('9월 1일', [
+                      _buildAdjustmentItem('똑똑팀', '금액 미입력', false),
+                      _buildAdjustmentItem('홍길동 외 2인', '총 26,500원', true),
+                    ]),
+                    _buildDateGroup('8월 27일', [
+                      _buildAdjustmentItem('김유진', '총 4,000원', true),
+                    ]),
+                  ],
+                ),
+                // 정산 완료 탭
+                ListView(
+                  children: [
+                    _buildDateGroup('8월 25일', [
+                      _buildAdjustmentItem('완료된 정산 1', '총 15,000원', true),
+                      _buildAdjustmentItem('완료된 정산 2', '총 30,000원', true),
+                    ]),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -122,7 +168,7 @@ class _AdjustmentListPageState extends State<AdjustmentListPage>
             date,
             style: const TextStyle(
               fontSize: 13,
-              color: Colors.black,
+              color: Color(0xFF6B7684),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -137,7 +183,7 @@ class _AdjustmentListPageState extends State<AdjustmentListPage>
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: const Color(0xFFF4F5F7),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -145,7 +191,7 @@ class _AdjustmentListPageState extends State<AdjustmentListPage>
           title,
           style: const TextStyle(
             fontSize: 15,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.bold,
           ),
         ),
         subtitle: Text(
@@ -154,6 +200,7 @@ class _AdjustmentListPageState extends State<AdjustmentListPage>
             fontSize: 13,
             color: hasAmount ? const Color(0xFF8C98A8) : Colors.black54,
             height: 1.8,
+            fontWeight: FontWeight.w500,
           ),
         ),
         onTap: () {
