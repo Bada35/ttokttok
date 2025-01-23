@@ -12,7 +12,19 @@ class _AdjustmentProcessPageState extends State<AdjustmentProcessPage> {
   final TextEditingController _amountController = TextEditingController();
   bool _isEqualDistribution = true;
   final Map<String, double> _individualAmounts = {};
-  final List<String> _participants = ['나', '친구1', '친구2']; // 임시 데이터
+  List<String> _participants = [];
+  String _roomName = '';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null) {
+      _roomName = args['roomName'] as String;
+      _participants = List<String>.from(args['participants'] as List);
+    }
+  }
 
   @override
   void dispose() {
@@ -22,11 +34,12 @@ class _AdjustmentProcessPageState extends State<AdjustmentProcessPage> {
 
   void _calculateEqualDistribution() {
     if (_amountController.text.isEmpty) return;
-
     double totalAmount = double.parse(_amountController.text);
-    double perPerson = totalAmount / _participants.length;
-
+    double perPerson =
+        totalAmount / (_participants.length + 1); // +1 for the current user
     setState(() {
+      _individualAmounts.clear();
+      _individualAmounts['나'] = perPerson;
       for (var participant in _participants) {
         _individualAmounts[participant] = perPerson;
       }
@@ -36,80 +49,138 @@ class _AdjustmentProcessPageState extends State<AdjustmentProcessPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('정산하기'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Row(
           children: [
-            // 총액 입력
-            TextField(
-              controller: _amountController,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(
-                labelText: '총 금액',
-                hintText: '정산할 총 금액을 입력하세요',
-                border: OutlineInputBorder(),
-                suffixText: '원',
+            Text(
+              '정산하기(1차)',
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
-              onChanged: (_) {
-                if (_isEqualDistribution) {
-                  _calculateEqualDistribution();
-                }
-              },
             ),
-            const SizedBox(height: 16),
-
-            // 분배 방식 선택
-            Row(
-              children: [
-                Expanded(
-                  child: SegmentedButton<bool>(
-                    segments: const [
-                      ButtonSegment<bool>(
-                        value: true,
-                        label: Text('1/N 하기'),
+            const Spacer(),
+            TextButton(
+              onPressed: () {
+                // TODO: 차수 추가 기능 구현
+              },
+              child: const Text(
+                '차수추가',
+                style: TextStyle(
+                  color: Color(0xFF22BE67),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Color(0xFF22BE67),
+                            width: 2,
+                          ),
+                        ),
                       ),
-                      ButtonSegment<bool>(
-                        value: false,
-                        label: Text('직접 입력'),
+                      child: Row(
+                        children: [
+                          const Text(
+                            '1/N 하기',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Spacer(),
+                          Switch(
+                            value: _isEqualDistribution,
+                            onChanged: (value) {
+                              setState(() {
+                                _isEqualDistribution = value;
+                                if (_isEqualDistribution) {
+                                  _calculateEqualDistribution();
+                                }
+                              });
+                            },
+                            activeColor: const Color(0xFF22BE67),
+                          ),
+                        ],
                       ),
-                    ],
-                    selected: {_isEqualDistribution},
-                    onSelectionChanged: (Set<bool> newSelection) {
-                      setState(() {
-                        _isEqualDistribution = newSelection.first;
-                        if (_isEqualDistribution) {
-                          _calculateEqualDistribution();
-                        }
-                      });
-                    },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: _amountController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: const InputDecoration(
+                  hintText: '금액입력(원)',
+                  hintStyle: TextStyle(color: Colors.grey),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFF22BE67)),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // 참여자별 금액 입력/표시
-            Expanded(
-              child: Card(
-                child: ListView.builder(
-                  itemCount: _participants.length,
-                  itemBuilder: (context, index) {
-                    String participant = _participants[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        child: Text(participant[0]),
+                onChanged: (_) {
+                  if (_isEqualDistribution) {
+                    _calculateEqualDistribution();
+                  }
+                },
+              ),
+              const SizedBox(height: 24),
+              Text(
+                '인원편집 ${_participants.length + 1}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Card(
+                elevation: 0,
+                color: Colors.grey[100],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        child: Text('나', style: TextStyle(color: Colors.white)),
                       ),
-                      title: Text(participant),
+                      title: const Text('나'),
                       trailing: _isEqualDistribution
                           ? Text(
-                              '${_individualAmounts[participant]?.toStringAsFixed(0) ?? 0}원')
+                              '${_individualAmounts['나']?.toStringAsFixed(0) ?? 0}원')
                           : SizedBox(
-                              width: 120,
+                              width: 100,
                               child: TextField(
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
@@ -121,27 +192,88 @@ class _AdjustmentProcessPageState extends State<AdjustmentProcessPage> {
                                 ),
                                 onChanged: (value) {
                                   setState(() {
-                                    _individualAmounts[participant] =
+                                    _individualAmounts['나'] =
                                         double.tryParse(value) ?? 0;
                                   });
                                 },
                               ),
                             ),
-                    );
-                  },
+                    ),
+                    ..._participants.map((participant) => ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.grey,
+                            child: Text(participant[0],
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                          title: Text(participant),
+                          trailing: _isEqualDistribution
+                              ? Text(
+                                  '${_individualAmounts[participant]?.toStringAsFixed(0) ?? 0}원')
+                              : SizedBox(
+                                  width: 100,
+                                  child: TextField(
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly
+                                    ],
+                                    decoration: const InputDecoration(
+                                      suffixText: '원',
+                                      isDense: true,
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _individualAmounts[participant] =
+                                            double.tryParse(value) ?? 0;
+                                      });
+                                    },
+                                  ),
+                                ),
+                        )),
+                  ],
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ElevatedButton(
+            onPressed: () {
+              if (_amountController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('금액을 입력해주세요')),
+                );
+                return;
+              }
+              Navigator.pushNamed(
+                context,
+                '/adjustment-confirm',
+                arguments: {
+                  'roomName': _roomName,
+                  'totalAmount': double.parse(_amountController.text),
+                  'participants': _participants,
+                  'individualAmounts': _individualAmounts,
+                },
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF22BE67),
+              minimumSize: const Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              foregroundColor: Colors.white,
             ),
-
-            // 확인 버튼
-            ElevatedButton(
-              onPressed: () {
-                // TODO: 정산 데이터 저장 및 카카오톡 메시지 전송
-                Navigator.pop(context);
-              },
-              child: const Text('확인'),
+            child: const Text(
+              '확인',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );
