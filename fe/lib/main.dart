@@ -10,6 +10,9 @@ import 'package:flutter/services.dart'; // SystemChrome 임포트
 import 'package:device_info_plus/device_info_plus.dart'; // device_info_plus 임포트
 
 import './splash/splash_page.dart'; // SplashPage 임포트 추가
+import './pages/adjustment/adjustment_list_page.dart';
+import './pages/adjustment/create_room_page.dart';
+import './pages/adjustment/adjustment_process_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 비동기 초기화를 위해 추가
@@ -68,7 +71,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: SplashPage(), // 스플래시 페이지를 처음에 띄움
+      initialRoute: '/',
+      getPages: [
+        GetPage(name: '/', page: () => SplashPage()),
+        GetPage(
+            name: '/adjustment-list', page: () => const AdjustmentListPage()),
+        GetPage(name: '/create-room', page: () => const CreateRoomPage()),
+        GetPage(
+            name: '/adjustment-process',
+            page: () => const AdjustmentProcessPage()),
+      ],
     );
   }
 }
