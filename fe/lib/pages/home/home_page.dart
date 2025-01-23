@@ -4,11 +4,11 @@ import 'package:get/get.dart';
 
 // 페이지 이동을 위한 import
 import 'info_page.dart';
-import '../pages/user/user_page.dart';
-import '../pages/adjustment_page.dart';
-import '../widgets/logo_and_notification.dart';
-import '../widgets/user_info_container.dart';
-import '../widgets/dutch_pay_options.dart';
+import '../user/user_page.dart';
+import '../adjustment/adjustment_list_page.dart';
+import '../../widgets/logo_and_notification.dart';
+import '../../widgets/user_info_container.dart';
+import '../../widgets/dutch_pay_options.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -99,7 +99,7 @@ class HomePage extends StatelessWidget {
                     Get.to(() => const HomePage());
                     break;
                   case 1: // 정산 목록
-                    Get.to(() => const AdjustmentPage());
+                    Get.to(() => const AdjustmentListPage());
                     break;
                   case 2: // 내 정보
                     Get.to(() => const UserPage());
