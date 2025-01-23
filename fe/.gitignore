@@ -42,3 +42,18 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Build directories
+/build/
+/out/
+/bin/
+
+# Configuration files
+*.properties
+!gradle-wrapper.properties
+application*.properties
+application*.yml
+
+# Environment files
+.env
+.env.*
