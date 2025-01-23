@@ -9,7 +9,6 @@ class CreateRoomPage extends StatefulWidget {
 
 class _CreateRoomPageState extends State<CreateRoomPage> {
   final TextEditingController _roomNameController = TextEditingController();
-  final List<String> _selectedFriends = [];
 
   @override
   void dispose() {
@@ -17,89 +16,87 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
     super.dispose();
   }
 
-  void _selectFriends() {
-    // TODO: 카카오톡 친구 선택 API 연동
-    setState(() {
-      _selectedFriends.add('친구 ${_selectedFriends.length + 1}');
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('방 만들기'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          '방 이름을 입력주세요',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 방 이름 입력
             TextField(
               controller: _roomNameController,
               decoration: const InputDecoration(
-                labelText: '방 이름',
-                hintText: '방 이름을 입력하세요',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // 친구 선택 버튼
-            ElevatedButton.icon(
-              onPressed: _selectFriends,
-              icon: const Icon(Icons.person_add),
-              label: const Text('카카오톡 친구 선택'),
-            ),
-            const SizedBox(height: 16),
-
-            // 선택된 친구 목록
-            Expanded(
-              child: Card(
-                child: ListView.builder(
-                  itemCount: _selectedFriends.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const CircleAvatar(
-                        child: Icon(Icons.person),
-                      ),
-                      title: Text(_selectedFriends[index]),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.remove_circle_outline),
-                        onPressed: () {
-                          setState(() {
-                            _selectedFriends.removeAt(index);
-                          });
-                        },
-                      ),
-                    );
-                  },
+                hintText: '똑똑팀',
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF22BE67)),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF22BE67), width: 2),
                 ),
               ),
-            ),
-
-            // 방 생성 버튼
-            ElevatedButton(
-              onPressed: () {
-                if (_roomNameController.text.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('방 이름을 입력해주세요')),
-                  );
-                  return;
-                }
-                if (_selectedFriends.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('친구를 선택해주세요')),
-                  );
-                  return;
-                }
-                // TODO: 방 생성 로직 구현
-                Navigator.pushNamed(context, '/adjustment-process');
-              },
-              child: const Text('방 만들기'),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ElevatedButton(
+            onPressed: () {
+              if (_roomNameController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('방 이름을 입력해주세요')),
+                );
+                return;
+              }
+              // 임시 데이터로 친구 목록 생성
+              final selectedFriends = ['석유민', '배영환', '이재진'];
+              Navigator.pushNamed(
+                context,
+                '/adjustment-process',
+                arguments: {
+                  'roomName': _roomNameController.text,
+                  'participants': selectedFriends,
+                },
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF22BE67),
+              minimumSize: const Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              foregroundColor: Colors.white,
+            ),
+            child: const Text(
+              '다음',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ),
       ),
     );
