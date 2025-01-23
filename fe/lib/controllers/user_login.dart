@@ -9,7 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart'; // flutter_dotenv 임포트
 
 import 'user_controller.dart';
 import '../utils/token_storage.dart'; // TokenStorage 임포트
-import '../home/home_page.dart'; // HomePage 임포트 추가
+import '../pages/home/home_page.dart'; // HomePage 임포트 추가
 
 class LoginController extends GetxController {
   final UserController userController = Get.put(UserController());

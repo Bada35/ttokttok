@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../pages/home_page.dart';
-import '../pages/adjustment_page.dart';
+import '../pages/adjustment/adjustment_list_page.dart';
 import '../pages/user/user_page.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
@@ -40,7 +40,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
             Get.off(() => const HomePage());
             break;
           case 1:
-            Get.off(() => const AdjustmentPage());
+            Get.off(() => const AdjustmentListPage());
             break;
           case 2:
             Get.off(() => const UserPage());
