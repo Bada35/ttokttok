@@ -28,10 +28,10 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          '방 이름을 입력주세요',
+          '방 이름을 알려주세요',
           style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
+            color: Color.fromRGBO(51, 61, 75, 1),
+            fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -44,6 +44,11 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
               controller: _roomNameController,
               decoration: const InputDecoration(
                 hintText: '똑똑팀',
+                hintStyle: TextStyle(
+                  color: Color.fromRGBO(153, 163, 177, 1),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFF22BE67)),
                 ),
