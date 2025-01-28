@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AdjustmentProcessPage extends StatefulWidget {
   const AdjustmentProcessPage({super.key});
@@ -8,12 +9,34 @@ class AdjustmentProcessPage extends StatefulWidget {
   State<AdjustmentProcessPage> createState() => _AdjustmentProcessPageState();
 }
 
-class _AdjustmentProcessPageState extends State<AdjustmentProcessPage> {
+class _AdjustmentProcessPageState extends State<AdjustmentProcessPage>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _amountController = TextEditingController();
+  late TabController _tabController;
   bool _isEqualDistribution = true;
   final Map<String, double> _individualAmounts = {};
   List<String> _participants = [];
   String _roomName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // TabController 초기화
+    _tabController = TabController(length: 2, vsync: this);
+    // 탭 변경 리스너 추가
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _tabController.dispose(); // 컨트롤러 해제
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -24,12 +47,6 @@ class _AdjustmentProcessPageState extends State<AdjustmentProcessPage> {
       _roomName = args['roomName'] as String;
       _participants = List<String>.from(args['participants'] as List);
     }
-  }
-
-  @override
-  void dispose() {
-    _amountController.dispose();
-    super.dispose();
   }
 
   void _calculateEqualDistribution() {
@@ -54,7 +71,7 @@ class _AdjustmentProcessPageState extends State<AdjustmentProcessPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: SvgPicture.asset('assets/images/back_button.svg'),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AdjustmentConfirmPage extends StatefulWidget {
   const AdjustmentConfirmPage({super.key});
@@ -35,7 +36,7 @@ class _AdjustmentConfirmPageState extends State<AdjustmentConfirmPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: SvgPicture.asset('assets/images/back_button.svg'),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(

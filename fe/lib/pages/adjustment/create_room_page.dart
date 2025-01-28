@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CreateRoomPage extends StatefulWidget {
   const CreateRoomPage({super.key});
@@ -24,22 +25,25 @@ class _CreateRoomPageState extends State<CreateRoomPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: SvgPicture.asset('assets/images/back_button.svg'),
           onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          '방 이름을 알려주세요',
-          style: TextStyle(
-            color: Color.fromRGBO(51, 61, 75, 1),
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 8), // 앱바와 제목 사이 간격
+            const Text(
+              '방 이름을 알려주세요',
+              style: TextStyle(
+                color: Color.fromRGBO(51, 61, 75, 1),
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 40), // 제목과 입력 필드 사이 간격
             TextField(
               controller: _roomNameController,
               decoration: const InputDecoration(
