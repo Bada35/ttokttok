@@ -12,32 +12,27 @@ class AdjustmentCompletePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: const BoxDecoration(
-                color: Color(0xFF22BE67),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.check,
-                color: Colors.white,
-                size: 32,
+            SizedBox(
+              width: 76,
+              height: 76,
+              child: SvgPicture.asset(
+                'assets/images/green_check.svg',
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 36),
             const Text(
               '정산 요청을 완료했어요',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
+                color: Color(0xFF333D48),
               ),
             ),
             const SizedBox(height: 8),
             const Text(
-              '정산이 완료되면 업데이트될게요',
+              '정산이 완료되면 알려드릴게요',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 color: Colors.grey,
               ),
             ),
@@ -67,7 +62,7 @@ class AdjustmentCompletePage extends StatelessWidget {
             child: const Text(
               '확인',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
