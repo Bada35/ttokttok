@@ -20,9 +20,49 @@
 
 ## 3. 필요한 설정
 ### 3.1 Flutter 패키지
-- `flutter_secure_storage`: 토큰 저장 및 관리
-- `flutter_svg`: SVG 이미지 표시
-- `flutter_dotenv`: 환경변수 관리
-- `flutter_riverpod`: 상태 관리
-- `flutter_riverpod_annotation`: 상태 관리 어노테이션
-- `flutter_riverpod_annotation`: 상태 관리 어노테이션
+```
+yaml
+dependencies:
+  kakao_flutter_sdk_user: ^1.8.0
+```
+### 3.2 Android 설정
+`android/app/src/main/AndroidManifest.xml`에 추가:
+```
+xml
+<activity android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity">
+<intent-filter android:label="flutter_web_auth">
+<action android:name="android.intent.action.VIEW" />
+<category android:name="android.intent.category.DEFAULT" />
+<category android:name="android.intent.category.BROWSABLE" />
+<data android:scheme="kakao{NATIVE_APP_KEY}" android:host="oauth"/>
+</intent-filter>
+</activity>
+```
+### 3.3 iOS 설정
+`ios/Runner/Info.plist`에 추가:
+```
+xml
+<key>LSApplicationQueriesSchemes</key>
+<array>
+<string>kakaokompassauth</string>
+<string>kakaolink</string>
+</array>
+<key>CFBundleURLTypes</key>
+<array>
+<dict>
+<key>CFBundleURLSchemes</key>
+<array>
+<string>kakao{NATIVE_APP_KEY}</string>
+</array>
+</dict>
+</array>
+```
+
+## 4. API 엔드포인트
+- POST `/api/auth/login`: 카카오 토큰으로 로그인
+- POST `/api/auth/register`: 신규 회원 등록
+
+## 5. 에러 처리
+- 카카오톡 미설치: 카카오계정으로 로그인 시도
+- 토큰 만료: 리프레시 토큰으로 재발급
+- 네트워크 오류: 스낵바로 사용자에게 알림
