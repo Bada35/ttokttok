@@ -71,6 +71,7 @@ flutter:
     - assets/.env
     - assets/images/profile_placeholder.png
     - assets/images/green_check.svg  # 추가
+    - assets/images/back_button.svg  # 추가
   fonts:
     - family: Pretendard
       fonts:

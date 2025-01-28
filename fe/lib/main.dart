@@ -13,6 +13,8 @@ import './splash/splash_page.dart'; // SplashPage 임포트 추가
 import './pages/adjustment/adjustment_list_page.dart';
 import './pages/adjustment/create_room_page.dart';
 import './pages/adjustment/adjustment_process_page.dart';
+import './pages/adjustment/adjustment_confirm_page.dart';
+import './pages/adjustment/adjustment_complete_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 비동기 초기화를 위해 추가
@@ -80,6 +82,12 @@ class MyApp extends StatelessWidget {
         GetPage(
             name: '/adjustment-process',
             page: () => const AdjustmentProcessPage()),
+        GetPage(
+            name: '/adjustment-confirm',
+            page: () => const AdjustmentConfirmPage()),
+        GetPage(
+            name: '/adjustment-complete',
+            page: () => const AdjustmentCompletePage()),
       ],
     );
   }
