@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
     
-  kakao_flutter_sdk: ^1.9.5 # 사용 가능한 최신 버전으로 설정
+  kakao_flutter_sdk: ^1.9.6 # 사용 가능한 최신 버전으로 설정
   http: ^1.2.2 # http요청을 위함
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -15,6 +15,8 @@ import './pages/adjustment/create_room_page.dart';
 import './pages/adjustment/adjustment_process_page.dart';
 import './pages/adjustment/adjustment_confirm_page.dart';
 import './pages/adjustment/adjustment_complete_page.dart';
+import './pages/home/home_page.dart';
+import './pages/register/register_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 비동기 초기화를 위해 추가
@@ -75,7 +77,9 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       getPages: [
-        GetPage(name: '/', page: () => SplashPage()),
+        GetPage(name: '/', page: () => const SplashPage()),
+        GetPage(name: '/home', page: () => const HomePage()),
+        GetPage(name: '/register', page: () => const RegisterPage()),
         GetPage(
             name: '/adjustment-list', page: () => const AdjustmentListPage()),
         GetPage(name: '/create-room', page: () => const CreateRoomPage()),
@@ -89,6 +93,13 @@ class MyApp extends StatelessWidget {
             name: '/adjustment-complete',
             page: () => const AdjustmentCompletePage()),
       ],
+      onUnknownRoute: (settings) {
+        if (settings.name?.startsWith('/?code=') ?? false) {
+          print('카카오 로그인 콜백 감지: ${settings.name}');
+          return GetPageRoute(page: () => const SplashPage());
+        }
+        return null;
+      },
     );
   }
 }

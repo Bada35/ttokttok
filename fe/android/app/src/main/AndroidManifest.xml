@@ -2,11 +2,12 @@
     <application
         android:label="똑똑"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -22,13 +23,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
-            <!-- Intent filter for KakaoLink -->
+            <!-- 카카오톡 로그인 후 리다이렉트 처리를 위한 설정 추가 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="kakaolink"
-                    android:scheme="kakao${KAKAO_NATIVE_APP_KEY}" />
+                <data 
+                    android:scheme="kakao7777c43ef233860082a2e6235c0f2a36"
+                    android:host="oauth"/>
             </intent-filter>
         </activity>
 
@@ -44,8 +46,9 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- "kakao${YOUR_NATIVE_APP_KEY}://oauth" 형식의 앱 실행 스킴 설정 -->
-                <data android:scheme="kakao${KAKAO_NATIVE_APP_KEY}" android:host="oauth"/>
+                <data 
+                    android:scheme="kakao7777c43ef233860082a2e6235c0f2a36"
+                    android:host="oauth"/>
             </intent-filter>
         </activity>
     </application>
