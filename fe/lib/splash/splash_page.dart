@@ -6,13 +6,15 @@ import './login_page.dart'; // LoginPage 임포트 추가
 // import '../home/home_page.dart';
 
 class SplashPage extends StatelessWidget {
+  const SplashPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     // 스플래시 화면을 일정 시간 후에 자동으로 로그인 페이지로 이동
     Future.delayed(const Duration(seconds: 1), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const LoginPage()),
+        MaterialPageRoute(builder: (context) => LoginPage()),
         // 임시로 넣을게
         // MaterialPageRoute(builder: (context) => const HomePage()),
       );
@@ -35,7 +37,7 @@ class SplashPage extends StatelessWidget {
               Positioned(
                 left: (screenSize.width * 0.8) / 2, // 중앙 정렬
                 top: (screenSize.height * 0.8 - 83.65) / 2, // 중앙 정렬
-                child: Container(
+                child: SizedBox(
                   width: 92,
                   height: 83.65,
                   // 앱 로고를 보여주는 컨테이너

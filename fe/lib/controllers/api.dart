@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import '../utils/token_storage.dart'; // TokenStorage 임포트
-import 'user_login.dart'; // 로그인 로직 임포트
+import './login_controller.dart'; // 로그인 로직 임포트
 
 class API {
   static final String _baseUrl = dotenv.env['BASE_URL']!; // baseUrl 설정
