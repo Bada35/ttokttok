@@ -3,10 +3,12 @@ import 'package:get/get.dart'; // getx
 
 // 연결된 페이지
 import '../controllers/login_controller.dart';
+import '../controllers/user_controller.dart';
 
 // 카카오 소셜 로그인 기능
 class LoginPage extends StatelessWidget {
   final LoginController loginController = Get.put(LoginController());
+  final UserController userController = Get.find<UserController>();
 
   LoginPage({super.key});
 

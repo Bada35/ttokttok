@@ -5,124 +5,112 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../pages/home/home_page.dart';
+import 'user_controller.dart';
 
 class LoginController extends GetxController {
   final _isLoading = false.obs;
   bool get isLoading => _isLoading.value;
   static final String _baseUrl = dotenv.env['BASE_URL']!;
+  final UserController userController = Get.find<UserController>();
 
   Future<void> loginWithKakao() async {
+    if (_isLoading.value) return;
+
     _isLoading.value = true;
     try {
-      // 카카오톡 설치 여부 확인
-      if (await isKakaoTalkInstalled()) {
-        await _loginWithKakaoTalk();
+      bool hasToken = await AuthApi.instance.hasToken();
+      if (hasToken) {
+        try {
+          AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
+          print('토큰 유효성 체크 성공 ${tokenInfo.id} ${tokenInfo.expiresIn}');
+
+          User user = await UserApi.instance.me();
+          await _processKakaoLogin(
+              await AuthApi.instance.refreshToken() ?? tokenInfo.accessToken);
+        } catch (error) {
+          print('토큰 정보 조회 실패: $error');
+          await _loginProcess();
+        }
       } else {
-        await _loginWithKakaoAccount();
+        print('발급된 토큰 없음');
+        await _loginProcess();
       }
-    } catch (error) {
-      Get.snackbar('로그인 실패', '로그인 중 오류가 발생했습니다.');
+    } catch (e) {
+      print('로그인 프로세스 실패: $e');
+      _handleError('로그인 처리 중 문제가 발생했습니다.');
     } finally {
       _isLoading.value = false;
     }
   }
 
-  Future<void> _loginWithKakaoTalk() async {
+  Future<void> _loginProcess() async {
     try {
-      OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
-      print('카카오톡 로그인 성공: ${token.accessToken}'); // 디버깅용
-      await _processKakaoToken(token);
-    } catch (error) {
-      print('카카오톡 로그인 에러: $error'); // 디버깅용
-      if (error is PlatformException && error.code == 'CANCELED') {
-        // 사용자가 취소한 경우
-        return;
+      OAuthToken token;
+      if (await isKakaoTalkInstalled()) {
+        try {
+          token = await UserApi.instance.loginWithKakaoTalk();
+          print('카카오톡으로 로그인 성공');
+        } catch (error) {
+          print('카카오톡으로 로그인 실패: $error');
+          if (error is PlatformException && error.code == 'CANCELED') {
+            _handleError('로그인이 취소되었습니다.');
+            return;
+          }
+          token = await UserApi.instance.loginWithKakaoAccount();
+          print('카카오계정으로 로그인 성공');
+        }
+      } else {
+        token = await UserApi.instance.loginWithKakaoAccount();
+        print('카카오계정으로 로그인 성공');
       }
-      // 다른 에러의 경우 카카오계정으로 로그인 시도
-      await _loginWithKakaoAccount();
+      await _processKakaoLogin(token);
+    } catch (e) {
+      print('로그인 프로세스 실패: $e');
+      _handleError('로그인 처리 중 문제가 발생했습니다.');
     }
   }
 
-  Future<void> _loginWithKakaoAccount() async {
+  Future<void> _processKakaoLogin(OAuthToken token) async {
     try {
-      print('=== 카카오계정 로그인 시작 ===');
-      print('카카오계정 로그인 시도');
-
-      // 로그인 시도 전 상태 확인
-      final installed = await isKakaoTalkInstalled();
-      print('카카오톡 설치 여부: $installed');
-
-      OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-      print('카카오계정 로그인 성공: ${token.accessToken}');
-
-      // 사용자 정보 요청
-      print('사용자 정보 요청 시작');
       User user = await UserApi.instance.me();
-      print('사용자 정보: ${user.id}, ${user.kakaoAccount?.email}');
 
-      await _processKakaoToken(token);
-    } catch (error) {
-      print('=== 카카오계정 로그인 에러 상세 ===');
-      print('에러 타입: ${error.runtimeType}');
-      print('에러 메시지: $error');
-      if (error is PlatformException) {
-        print('PlatformException 코드: ${error.code}');
-        print('PlatformException 메시지: ${error.message}');
-        print('PlatformException 상세: ${error.details}');
-      }
-      Get.snackbar('로그인 실패', '카카오계정으로 로그인할 수 없습니다.');
-    }
-  }
-
-  Future<void> _processKakaoToken(OAuthToken token) async {
-    try {
-      print('토큰 처리 시작');
-      print('서버 URL: $_baseUrl/api/auth/login'); // URL 확인
-      print('토큰 값: ${token.accessToken}'); // 토큰 값 확인
-
-      final response = await http.post(
-        Uri.parse('$_baseUrl/api/auth/login'),
-        headers: {
-          'Authorization': 'Bearer ${token.accessToken}',
-          'Content-Type': 'application/json', // Content-Type 헤더 추가
-        },
-      ).timeout(
-        // 타임아웃 추가
-        const Duration(seconds: 10),
-        onTimeout: () {
-          print('서버 요청 타임아웃');
-          throw TimeoutException('서버 요청 시간 초과');
-        },
+      await userController.updateUser(
+        id: user.id.toInt(),
+        kakaoId: user.id.toInt(),
+        nickname: user.kakaoAccount?.profile?.nickname ?? '',
+        email: user.kakaoAccount?.email ?? '',
+        profileImageUrl: user.kakaoAccount?.profile?.profileImageUrl ?? '',
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
       );
 
-      print('서버 응답 코드: ${response.statusCode}');
-      print('서버 응답 바디: ${response.body}');
+      Get.offAll(() => const HomePage());
+    } catch (e) {
+      print('사용자 정보 처리 실패: $e');
+      _handleError('사용자 정보를 가져오는데 실패했습니다.');
+    }
+  }
 
-      if (response.statusCode == 200) {
-        final userData = json.decode(response.body);
-        print('파싱된 유저 데이터: $userData');
-        Get.offAllNamed('/home');
-      } else if (response.statusCode == 404) {
-        final user = await UserApi.instance.me();
-        print(
-            '카카오 사용자 정보: ${user.kakaoAccount?.email}, ${user.kakaoAccount?.profile?.nickname}');
-        Get.toNamed('/register', arguments: {
-          'kakaoToken': token.accessToken,
-          'email': user.kakaoAccount?.email,
-          'nickname': user.kakaoAccount?.profile?.nickname,
-        });
-      } else {
-        print('예상치 못한 상태 코드: ${response.statusCode}');
-        throw Exception('서버 오류 (상태 코드: ${response.statusCode})');
-      }
-    } catch (error) {
-      print('토큰 처리 중 에러 발생: $error');
-      print('에러 타입: ${error.runtimeType}');
-      if (error is TimeoutException) {
-        Get.snackbar('오류', '서버 응답 시간이 초과되었습니다.');
-      } else {
-        Get.snackbar('오류', '서버와 통신 중 오류가 발생했습니다.');
-      }
+  void _handleError(String message) {
+    Get.snackbar(
+      '오류',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+  }
+
+  // 로그아웃 기능 추가
+  Future<void> logout() async {
+    try {
+      await UserApi.instance.logout();
+      await userController.clearUser(); // UserController에 clearUser 메서드 필요
+      Get.offAll(() => const HomePage()); // 또는 로그인 페이지로 이동
+    } catch (e) {
+      print('로그아웃 실패: $e');
+      _handleError('로그아웃 처리 중 문제가 발생했습니다.');
     }
   }
 }

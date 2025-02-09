@@ -17,10 +17,14 @@ import './pages/adjustment/adjustment_confirm_page.dart';
 import './pages/adjustment/adjustment_complete_page.dart';
 import './pages/home/home_page.dart';
 import './pages/register/register_page.dart';
+import './controllers/user_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 비동기 초기화를 위해 추가
   await dotenv.load(fileName: "assets/.env"); // .env 파일 로드
+
+  // UserController 전역 등록 추가
+  Get.put(UserController());
 
   // 디바이스 정보를 가져오기 위해 device_info_plus 사용
   final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
